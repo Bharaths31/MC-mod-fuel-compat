@@ -5,6 +5,11 @@
   "name": "IA Fuel Compatibility",
   "description": "Adds Oritech and Tech Reborn fuel support to Immersive Aircraft",
   "authors": [],
+  "contact": {
+    "homepage": "https://Bharaths31.github.io/MC-mod-fuel-compat/",
+    "sources": "https://github.com/Bharaths31/MC-mod-fuel-compat",
+    "issues": "https://github.com/Bharaths31/MC-mod-fuel-compat/issues"
+  },
   "license": "MIT",
   "icon": "assets/ia-fuel-compat/icon.png",
   "environment": "*",

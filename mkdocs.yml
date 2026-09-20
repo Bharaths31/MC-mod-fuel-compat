@@ -1,0 +1,43 @@
+site_name: Immersive Aircraft Tech Compat
+site_description: Documentation for Immersive Aircraft Tech Compat Mod
+site_url: https://Bharaths31.github.io/MC-mod-fuel-compat/
+repo_url: https://github.com/Bharaths31/MC-mod-fuel-compat
+repo_name: Bharaths31/MC-mod-fuel-compat
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Supported Fuels: fuels.md
+  - Configuration: configuration.md
