@@ -27,17 +27,16 @@ import java.util.List;
 
 @Mixin(value = EngineVehicle.class, remap = false)
 public abstract class EngineVehicleRefuelTankMixin {
-    @Shadow public abstract VehicleInventoryDescription getInventoryDescription();
-    @Shadow public abstract SparseSimpleInventory getInventory();
     @Shadow @Final protected int[] fuel;
 
     @Inject(method = "refuel(I)V", at = @At("HEAD"), cancellable = true)
     private void iaFuelCompat$refuelFromTank(int slotIndex, CallbackInfo ci) {
-        List<SlotDescription> boilerSlots = getInventoryDescription().getSlots(VehicleInventoryDescription.BOILER);
+        EngineVehicle vehicle = (EngineVehicle) (Object) this;
+        List<SlotDescription> boilerSlots = vehicle.getInventoryDescription().getSlots(VehicleInventoryDescription.BOILER);
         if (slotIndex >= boilerSlots.size()) return;
 
         int realSlotIndex = boilerSlots.get(slotIndex).index();
-        SparseSimpleInventory inv = getInventory();
+        SparseSimpleInventory inv = vehicle.getInventory();
         ItemStack stack = inv.getItem(realSlotIndex);
         if (stack.isEmpty()) return;
 
