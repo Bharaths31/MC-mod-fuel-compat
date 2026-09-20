@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(EngineVehicle.class)
+@Mixin(value = EngineVehicle.class, remap = false)
 public abstract class EngineVehicleRefuelMixin {
     @Redirect(
         method = "refuel(I)V",
