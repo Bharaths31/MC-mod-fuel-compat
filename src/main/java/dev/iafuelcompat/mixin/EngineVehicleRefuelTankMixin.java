@@ -38,11 +38,12 @@ public abstract class EngineVehicleRefuelTankMixin {
         int realSlotIndex = boilerSlots.get(slotIndex).index();
         SparseSimpleInventory inv = vehicle.getInventory();
         ItemStack stack = inv.getItem(realSlotIndex);
-        if (stack.isEmpty()) return;
+        if (stack.isEmpty()) return; System.out.println("[IA-Fuels] Mixin running on slot " + realSlotIndex);
 
         // Ensure we only process items that have FluidStorage (tanks, cells, buckets)
         ContainerItemContext ctx = ContainerItemContext.ofSingleSlot(InventoryStorage.of(inv, null).getSlot(realSlotIndex));
         Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, ctx);
+        System.out.println("[IA-Fuels-Debug] Mixin running on slot " + realSlotIndex + ", stack: " + stack + ", storage: " + (storage != null));
         
         if (storage == null) {
             return;
@@ -55,13 +56,10 @@ public abstract class EngineVehicleRefuelTankMixin {
             FuelDefinition def = FuelRegistry.getFluidFuel(fluidId);
             if (def == null) continue;
 
-            // IA standard fuel limit is around 1000 for accepting more fuel.
-            // If the buffer has room, we extract 1 bucket's worth of fluid.
             if (this.fuel[slotIndex] <= 1000) {
                 try (Transaction t = Transaction.openOuter()) {
                     long extracted = storage.extract(view.getResource(), FluidConstants.BUCKET, t);
                     if (extracted > 0) {
-                        // Calculate proportionate fuel time based on extracted droplets
                         int fuelTime = (int) ((double) extracted / FluidConstants.BUCKET * def.getEffectiveBurnTime());
                         if (fuelTime > 0) {
                             this.fuel[slotIndex] += fuelTime;
@@ -73,5 +71,10 @@ public abstract class EngineVehicleRefuelTankMixin {
                 }
             }
         }
+        
+        // Unconditionally cancel vanilla logic if a FluidStorage was found.
+        // This prevents vanilla from seeing getFuelTime > 0 and mistakenly doing stack.shrink(1),
+        // which deletes the entire fluid container (like Tech Reborn Tank Units).
+        ci.cancel();
     }
 }
