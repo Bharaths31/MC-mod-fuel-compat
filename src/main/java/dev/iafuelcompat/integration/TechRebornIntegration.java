@@ -2,16 +2,12 @@ package dev.iafuelcompat.integration;
 
 import dev.iafuelcompat.config.FuelConfig;
 import dev.iafuelcompat.container.TechRebornCellAdapter;
-import dev.iafuelcompat.fuel.FluidDiscovery;
 import dev.iafuelcompat.fuel.FuelDefinition;
 import dev.iafuelcompat.fuel.FuelRegistry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.material.Fluid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Optional;
 
 public final class TechRebornIntegration {
     private static final Logger LOGGER = LoggerFactory.getLogger("IA-Fuels");
@@ -24,7 +20,7 @@ public final class TechRebornIntegration {
     );
 
     public static void register(FuelConfig config) {
-        LOGGER.info("[IA-Fuels] Tech Reborn detected, registering fuels...");
+        LOGGER.info("[IA-Fuels] Tech Reborn detected, queueing fluids for lazy resolution...");
 
         for (var entry : FUEL_FLUIDS.entrySet()) {
             String fuelId = entry.getKey();
@@ -33,12 +29,6 @@ public final class TechRebornIntegration {
             FuelConfig.FuelEntry fuelEntry = config.fuels.get(fuelId);
             if (fuelEntry == null || !fuelEntry.enabled) {
                 LOGGER.info("[IA-Fuels]   {} → DISABLED by config", fuelId);
-                continue;
-            }
-
-            Optional<Fluid> fluid = FluidDiscovery.resolveFluid(fluidId, "TechReborn/" + fuelId);
-            if (fluid.isEmpty()) {
-                LOGGER.warn("[IA-Fuels]   {} → fluid {} NOT FOUND", fuelId, fluidId);
                 continue;
             }
 
@@ -52,19 +42,8 @@ public final class TechRebornIntegration {
                 true
             );
 
-            FuelRegistry.registerFluidFuel(fluidId, def);
-
-            String bucketCandidate = fluidId + "_bucket";
-            FluidDiscovery.resolveItem(bucketCandidate, "TechReborn/" + fuelId + "/bucket")
-                .ifPresent(item -> {
-                    String bucketId = BuiltInRegistries.ITEM.getKey(item).toString();
-                    FuelRegistry.registerItemFuel(bucketId, def);
-                    LOGGER.info("[IA-Fuels]   {} bucket → {} ({} ticks)",
-                        fuelId, bucketId, def.getEffectiveBurnTime());
-                });
-
-            LOGGER.info("[IA-Fuels]   {} → fluid {} ({} ticks, cell support: ON)",
-                fuelId, fluidId, def.getEffectiveBurnTime());
+            // Queue fluid fuel for lazy resolution
+            FuelRegistry.queueFluidFuel(fluidId, def);
         }
 
         if (config.containers.techrebornCells) {

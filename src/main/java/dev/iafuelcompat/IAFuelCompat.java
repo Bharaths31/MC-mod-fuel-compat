@@ -55,8 +55,8 @@ public class IAFuelCompat implements ModInitializer {
                 FuelDebugCommand.register(dispatcher)
         );
 
-        LOGGER.info("[IA-Fuels] Registered {} fuels, {} adapters. Bridge READY.",
-            FuelRegistry.getAllFuels().size(),
+        LOGGER.info("[IA-Fuels] Queued {} fuel candidates for lazy resolution. Registered {} adapters. Bridge READY.",
+            FuelRegistry.getCandidateCount(),
             FuelRegistry.getAdapters().size());
     }
 

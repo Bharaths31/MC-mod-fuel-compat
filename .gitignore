@@ -1,0 +1,29 @@
+# Build results
+build/
+bin/
+out/
+.gradle/
+.idea/
+*.iml
+*.iws
+*.ipr
+*.class
+
+# Allow keeping the compiled jar in the repo
+!build/libs/
+!build/libs/*.jar
+!build/devlibs/
+!build/devlibs/*.jar
+
+# Ignore local mod JAR dependencies
+*.jar
+!build/libs/*.jar
+!build/devlibs/*.jar
+!run/
+run/*
+!run/mods/
+run/mods/*
+
+# OS specific
+.DS_Store
+Thumbs.db
