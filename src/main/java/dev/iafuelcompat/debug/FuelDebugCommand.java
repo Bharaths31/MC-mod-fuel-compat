@@ -1,7 +1,6 @@
 package dev.iafuelcompat.debug;
 
 import com.mojang.brigadier.CommandDispatcher;
-import dev.iafuelcompat.container.FuelContainerAdapter;
 import dev.iafuelcompat.fuel.FuelDefinition;
 import dev.iafuelcompat.fuel.FuelRegistry;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,12 +24,6 @@ public final class FuelDebugCommand {
                             fuel.getEffectiveBurnTime(),
                             fuel.enabled() ? "ON" : "OFF"
                         )), false);
-                    }
-
-                    for (FuelContainerAdapter adapter : FuelRegistry.getAdapters()) {
-                        source.sendSuccess(() -> Component.literal(
-                            "  §bAdapter: " + adapter.getName()
-                        ), false);
                     }
 
                     return 1;

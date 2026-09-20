@@ -1,7 +1,6 @@
 package dev.iafuelcompat;
 
 import dev.iafuelcompat.config.FuelConfig;
-import dev.iafuelcompat.container.BucketFuelAdapter;
 import dev.iafuelcompat.debug.FuelDebugCommand;
 import dev.iafuelcompat.fuel.FuelRegistry;
 import dev.iafuelcompat.integration.OritechIntegration;
@@ -30,10 +29,6 @@ public class IAFuelCompat implements ModInitializer {
             return;
         }
 
-        if (config.containers.buckets) {
-            FuelRegistry.registerAdapter(new BucketFuelAdapter());
-        }
-
         if (FabricLoader.getInstance().isModLoaded("oritech")) {
             String ver = getModVersion("oritech");
             LOGGER.info("[IA-Fuels] Oritech {} detected", ver);
@@ -55,9 +50,8 @@ public class IAFuelCompat implements ModInitializer {
                 FuelDebugCommand.register(dispatcher)
         );
 
-        LOGGER.info("[IA-Fuels] Queued {} fuel candidates for lazy resolution. Registered {} adapters. Bridge READY.",
-            FuelRegistry.getCandidateCount(),
-            FuelRegistry.getAdapters().size());
+        LOGGER.info("[IA-Fuels] Queued {} fuel candidates for lazy resolution. Bridge READY.",
+            FuelRegistry.getCandidateCount());
     }
 
     private String getVersion() {

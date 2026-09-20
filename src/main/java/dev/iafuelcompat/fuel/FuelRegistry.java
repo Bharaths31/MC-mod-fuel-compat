@@ -1,20 +1,28 @@
 package dev.iafuelcompat.fuel;
 
-import dev.iafuelcompat.container.FuelContainerAdapter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Central registry for all fuel definitions.
+ * Supports two paths:
+ * <ul>
+ *   <li><b>Item fuels</b> — looked up by item registry ID (e.g. bucket items)</li>
+ *   <li><b>Fluid fuels</b> — looked up by fluid registry ID, used by the tank mixin
+ *       to drain fluid from any Fabric FluidStorage container</li>
+ * </ul>
+ *
+ * Fuel candidates are queued during {@code onInitialize()} and lazily resolved
+ * against the registries on first access, after all mods have finished loading.
+ */
 public final class FuelRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger("IA-Fuels");
 
@@ -26,8 +34,6 @@ public final class FuelRegistry {
     // Candidates queued during onInitialize() — resolved on first access
     private static final Map<String, FuelDefinition> ITEM_CANDIDATES = new ConcurrentHashMap<>();
     private static final Map<String, FuelDefinition> FLUID_CANDIDATES = new ConcurrentHashMap<>();
-
-    private static final List<FuelContainerAdapter> ADAPTERS = new CopyOnWriteArrayList<>();
 
     private static volatile boolean resolved = false;
 
@@ -90,7 +96,7 @@ public final class FuelRegistry {
                         LOGGER.info("[IA-Fuels]   ✓ {} → fluid {} ({} ticks)",
                             def.id(), fluidId, def.getEffectiveBurnTime());
 
-                        // Also try to register the bucket variant
+                        // Also try to register the bucket variant automatically
                         String bucketId = fluidId + "_bucket";
                         ResourceLocation bucketLoc = ResourceLocation.parse(bucketId);
                         if (BuiltInRegistries.ITEM.getOptional(bucketLoc).isPresent()) {
@@ -113,6 +119,10 @@ public final class FuelRegistry {
         }
     }
 
+    /**
+     * Get fuel time for an ItemStack by its item registry ID.
+     * Used by UtilsFuelTimeMixin to override IA's Utils.getFuelTime().
+     */
     public static int getFuelTime(ItemStack stack) {
         if (stack.isEmpty()) return 0;
         resolveIfNeeded();
@@ -121,51 +131,30 @@ public final class FuelRegistry {
         Integer time = ITEM_FUELS.get(itemId);
         if (time != null && time > 0) return time;
 
-        for (FuelContainerAdapter adapter : ADAPTERS) {
-            if (adapter.matches(stack)) {
-                int t = adapter.getFuelTime(stack);
-                if (t > 0) return t;
-            }
-        }
         return 0;
     }
 
-    @Nullable
-    public static FuelContainerAdapter getAdapter(ItemStack stack) {
-        if (stack.isEmpty()) return null;
-        for (FuelContainerAdapter adapter : ADAPTERS) {
-            if (adapter.matches(stack)) return adapter;
-        }
-        return null;
-    }
-
     /**
-     * Direct registration (bypasses lazy resolution). Use for fuels that
-     * don't need registry validation (e.g., already validated).
+     * Direct item fuel registration (bypasses lazy resolution).
      */
     public static void registerItemFuel(String itemId, FuelDefinition def) {
         ALL_FUELS.put(def.id(), def);
         ITEM_FUELS.put(itemId, def.getEffectiveBurnTime());
     }
 
+    /**
+     * Direct fluid fuel registration (bypasses lazy resolution).
+     */
     public static void registerFluidFuel(String fluidId, FuelDefinition def) {
         ALL_FUELS.put(def.id(), def);
         FLUID_FUELS.put(fluidId, def);
     }
 
-    public static void registerAdapter(FuelContainerAdapter adapter) {
-        ADAPTERS.add(adapter);
-    }
-
-    public static Collection<FuelDefinition> getAllFuels() {
-        resolveIfNeeded();
-        return ALL_FUELS.values();
-    }
-
-    public static List<FuelContainerAdapter> getAdapters() {
-        return ADAPTERS;
-    }
-
+    /**
+     * Lookup a FuelDefinition by fluid registry ID.
+     * Used by EngineVehicleRefuelTankMixin to calculate burn time
+     * when draining fluid from a tank item.
+     */
     public static FuelDefinition getFluidFuel(String fluidId) {
         resolveIfNeeded();
         return FLUID_FUELS.get(fluidId);
@@ -174,6 +163,11 @@ public final class FuelRegistry {
     public static Integer getItemFuelTime(String itemId) {
         resolveIfNeeded();
         return ITEM_FUELS.get(itemId);
+    }
+
+    public static Collection<FuelDefinition> getAllFuels() {
+        resolveIfNeeded();
+        return ALL_FUELS.values();
     }
 
     public static int getCandidateCount() {

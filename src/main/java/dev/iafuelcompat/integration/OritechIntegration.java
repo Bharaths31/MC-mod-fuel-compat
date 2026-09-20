@@ -12,17 +12,17 @@ public final class OritechIntegration {
     private static final Logger LOGGER = LoggerFactory.getLogger("IA-Fuels");
 
     private static final Map<String, String> FUEL_CANDIDATES = Map.of(
-        "oritech_fuel",    "oritech:still_fuel_bucket",
-        "oritech_biofuel", "oritech:still_biofuel_bucket",
-        "oritech_diesel",  "oritech:still_diesel_bucket"
+        "oritech_fuel",    "oritech:still_fuel",
+        "oritech_biofuel", "oritech:still_biofuel",
+        "oritech_diesel",  "oritech:still_diesel"
     );
 
     public static void register(FuelConfig config) {
-        LOGGER.info("[IA-Fuels] Oritech detected, queueing fuels for lazy resolution...");
+        LOGGER.info("[IA-Fuels] Oritech detected, queueing fluids for lazy resolution...");
 
         for (var entry : FUEL_CANDIDATES.entrySet()) {
             String fuelId = entry.getKey();
-            String bucketItemId = entry.getValue();
+            String fluidId = entry.getValue();
 
             FuelConfig.FuelEntry fuelEntry = config.fuels.get(fuelId);
             if (fuelEntry == null || !fuelEntry.enabled) {
@@ -34,13 +34,14 @@ public final class OritechIntegration {
                 fuelId,
                 "Oritech " + fuelId.replace("oritech_", ""),
                 "oritech",
-                bucketItemId.replace("_bucket", ""),
+                fluidId,
                 config.baseBurnTime,
                 fuelEntry.multiplier,
                 true
             );
 
-            FuelRegistry.queueItemFuel(bucketItemId, def);
+            // Queue fluid fuel for lazy resolution (also registers buckets automatically)
+            FuelRegistry.queueFluidFuel(fluidId, def);
         }
     }
 }
