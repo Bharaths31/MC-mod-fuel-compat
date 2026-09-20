@@ -29,5 +29,29 @@ public final class FuelDebugCommand {
                     return 1;
                 })
         );
+        
+        dispatcher.register(
+            Commands.literal("ia-fuels-hand")
+                .requires(src -> src.hasPermission(2))
+                .executes(ctx -> {
+                    CommandSourceStack source = ctx.getSource();
+                    net.minecraft.server.level.ServerPlayer player = source.getPlayer();
+                    if (player != null) {
+                        net.minecraft.world.item.ItemStack stack = player.getMainHandItem();
+                        if (!stack.isEmpty()) {
+                            source.sendSuccess(() -> Component.literal("Item: " + stack.getItem()), false);
+                            source.sendSuccess(() -> Component.literal("Components: " + stack.getComponents().toString()), false);
+                            
+                            // Check fluid storage
+                            net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext itemCtx = net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext.withConstant(stack);
+                            net.fabricmc.fabric.api.transfer.v1.storage.Storage<net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant> storage = net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.ITEM.find(stack, itemCtx);
+                            source.sendSuccess(() -> Component.literal("Storage: " + (storage != null ? "YES" : "NO")), false);
+                        } else {
+                            source.sendSuccess(() -> Component.literal("Hand is empty!"), false);
+                        }
+                    }
+                    return 1;
+                })
+        );
     }
 }
