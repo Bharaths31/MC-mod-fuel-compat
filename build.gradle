@@ -1,0 +1,94 @@
+plugins {
+    id "java"
+    id "net.fabricmc.fabric-loom" version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    // ParchmentMC
+    maven {
+        name = "ParchmentMC"
+        url = "https://maven.parchmentmc.org"
+    }
+    // Modrinth (for IA)
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content { includeGroup "maven.modrinth" }
+    }
+    // TechReborn / RebornCore
+    maven {
+        name = "TechReborn"
+        url = "https://maven.techreborn.net/"
+    }
+    // Architectury (for Oritech transitive deps)
+    maven {
+        name = "Architectury"
+        url = "https://maven.architectury.dev/"
+    }
+    // Curse Maven (fallback for mods without maven)
+    maven {
+        name = "Curse Maven"
+        url = "https://cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
+}
+
+dependencies {
+    // Minecraft + Mappings
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+    }
+
+    // Fabric
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Immersive Aircraft (required, compile against - local JAR)
+    modCompileOnly files("immersive_aircraft-1.5.2+1.21.1-fabric.jar")
+
+    // Oritech (optional, compile only)
+    modCompileOnly files("oritech-fabric-1.21.1-1.2.12.jar")
+
+    // Tech Reborn (optional, compile only)
+    modCompileOnly files("TechReborn-5.11.19.jar")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = "UTF-8"
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
+}
+
+loom {
+    mixin {
+        defaultRefmapName = "ia-fuel-compat-refmap.json"
+    }
+}
