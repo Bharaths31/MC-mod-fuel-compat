@@ -69,8 +69,8 @@ public class FuelConfig {
         config.fuels.put("oritech_diesel", new FuelEntry(true, 1.0f));
         config.fuels.put("tr_diesel", new FuelEntry(true, 1.0f));
         config.fuels.put("tr_biofuel", new FuelEntry(true, 0.75f));
-        config.fuels.put("tr_nitro_diesel", new FuelEntry(false, 1.25f));
-        config.fuels.put("tr_nitrofuel", new FuelEntry(false, 1.5f));
+        config.fuels.put("tr_nitro_diesel", new FuelEntry(true, 2.0f));
+        config.fuels.put("tr_nitrofuel", new FuelEntry(true, 1.5f));
         config.fuels.put("tr_turbo_diesel", new FuelEntry(true, 1.75f));
         config.fuels.put("oritech_turbo_diesel", new FuelEntry(true, 1.75f));
         config.fuels.put("mi_turbo_diesel", new FuelEntry(true, 1.75f));

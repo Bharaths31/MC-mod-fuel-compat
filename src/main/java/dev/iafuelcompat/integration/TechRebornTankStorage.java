@@ -43,7 +43,7 @@ public class TechRebornTankStorage extends SnapshotParticipant<ItemStack> implem
 
     @Override
     public FluidVariant getResource() {
-        CompoundTag tank = getTankTag();
+        CompoundTag tank = getTankTag(); System.out.println("[IA-Fuels-Debug] TankTag: " + tank);
         if (tank == null) return FluidVariant.blank();
         
         if (tank.contains("fluid", Tag.TAG_STRING)) {
@@ -67,6 +67,11 @@ public class TechRebornTankStorage extends SnapshotParticipant<ItemStack> implem
         if (tank == null) return 0;
         if (tank.contains("amount", Tag.TAG_ANY_NUMERIC)) {
             return tank.getLong("amount");
+        } else if (tank.contains("amount", Tag.TAG_COMPOUND)) {
+            CompoundTag amountTag = tank.getCompound("amount");
+            if (amountTag.contains("value", Tag.TAG_ANY_NUMERIC)) {
+                return amountTag.getLong("value");
+            }
         }
         return 0;
     }
@@ -97,10 +102,12 @@ public class TechRebornTankStorage extends SnapshotParticipant<ItemStack> implem
             CompoundTag rootTag = currentStack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
             CompoundTag tankTag = rootTag.getCompound("TankStorage");
             
-            tankTag.putLong("amount", newAmount);
+            CompoundTag amountTag = new CompoundTag();
+            amountTag.putLong("value", newAmount);
+            tankTag.put("amount", amountTag);
+            
             if (newAmount <= 0) {
                 tankTag.remove("fluid");
-                tankTag.putLong("amount", 0);
             }
             rootTag.put("TankStorage", tankTag);
             
