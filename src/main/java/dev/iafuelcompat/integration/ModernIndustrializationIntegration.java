@@ -8,20 +8,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public final class OritechIntegration {
+public final class ModernIndustrializationIntegration {
     private static final Logger LOGGER = LoggerFactory.getLogger("IA-Fuels");
 
-    private static final Map<String, String> FUEL_CANDIDATES = Map.of(
-        "oritech_fuel",    "oritech:still_fuel",
-        "oritech_biofuel", "oritech:still_biofuel",
-        "oritech_diesel",  "oritech:still_diesel",
-        "oritech_turbo_diesel", "oritech:still_turbo_diesel"
+    private static final Map<String, String> FUEL_FLUIDS = Map.of(
+        "mi_turbo_diesel", "modern_industrialization:turbo_diesel"
     );
 
     public static void register(FuelConfig config) {
-        LOGGER.info("[IA-Fuels] Oritech detected, queueing fluids for lazy resolution...");
+        LOGGER.info("[IA-Fuels] Queueing Modern Industrialization fluids for lazy resolution...");
 
-        for (var entry : FUEL_CANDIDATES.entrySet()) {
+        for (var entry : FUEL_FLUIDS.entrySet()) {
             String fuelId = entry.getKey();
             String fluidId = entry.getValue();
 
@@ -33,15 +30,15 @@ public final class OritechIntegration {
 
             FuelDefinition def = new FuelDefinition(
                 fuelId,
-                "Oritech " + fuelId.replace("oritech_", ""),
-                "oritech",
+                "MI " + fuelId.replace("mi_", ""),
+                "modern_industrialization",
                 fluidId,
                 config.baseBurnTime,
                 fuelEntry.multiplier,
                 true
             );
 
-            // Queue fluid fuel for lazy resolution (also registers buckets automatically)
+            // Queue fluid fuel for lazy resolution
             FuelRegistry.queueFluidFuel(fluidId, def);
         }
     }

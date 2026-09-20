@@ -15,7 +15,8 @@ public final class TechRebornIntegration {
         "tr_diesel",       "techreborn:diesel",
         "tr_biofuel",      "techreborn:biofuel",
         "tr_nitro_diesel", "techreborn:nitro_diesel",
-        "tr_nitrofuel",    "techreborn:nitrofuel"
+        "tr_nitrofuel",    "techreborn:nitrofuel",
+        "tr_turbo_diesel", "techreborn:turbo_diesel"
     );
 
     public static void register(FuelConfig config) {

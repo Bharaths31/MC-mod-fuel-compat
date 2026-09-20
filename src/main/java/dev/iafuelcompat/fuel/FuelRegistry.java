@@ -131,6 +131,21 @@ public final class FuelRegistry {
         Integer time = ITEM_FUELS.get(itemId);
         if (time != null && time > 0) return time;
 
+        // Dynamically check if the item contains a valid fluid fuel
+        net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext ctx = net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext.withConstant(stack);
+        net.fabricmc.fabric.api.transfer.v1.storage.Storage<net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant> storage = net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.ITEM.find(stack, ctx);
+        if (storage != null) {
+            for (net.fabricmc.fabric.api.transfer.v1.storage.StorageView<net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant> view : storage) {
+                if (!view.isResourceBlank()) {
+                    String fluidId = BuiltInRegistries.FLUID.getKey(view.getResource().getFluid()).toString();
+                    FuelDefinition fluidDef = FLUID_FUELS.get(fluidId);
+                    if (fluidDef != null) {
+                        return fluidDef.getEffectiveBurnTime();
+                    }
+                }
+            }
+        }
+
         return 0;
     }
 
