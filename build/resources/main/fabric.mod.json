@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "ia-fuel-compat",
+  "version": "1.0.0",
+  "name": "IA Fuel Compatibility",
+  "description": "Adds Oritech and Tech Reborn fuel support to Immersive Aircraft",
+  "authors": [],
+  "license": "MIT",
+  "icon": "assets/ia-fuel-compat/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.iafuelcompat.IAFuelCompat"
+    ]
+  },
+  "mixins": [
+    "ia-fuel-compat.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "fabric-api": ">=0.116.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "immersive_aircraft": ">=1.1.0"
+  },
+  "suggests": {
+    "oritech": "*",
+    "techreborn": "*"
+  }
+}
