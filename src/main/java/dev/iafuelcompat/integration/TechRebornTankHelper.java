@@ -18,9 +18,9 @@ public class TechRebornTankHelper {
         if (data == null) return null;
         
         CompoundTag tag = data.copyTag();
-        if (!tag.contains("tank", 10)) return null;
+        if (!tag.contains("TankStorage", 10)) return null;
         
-        CompoundTag tank = tag.getCompound("tank");
+        CompoundTag tank = tag.getCompound("TankStorage");
         if (tank.contains("fluid", 8)) {
             return tank.getString("fluid"); // Simple string format
         } else if (tank.contains("fluid", 10)) {
@@ -38,9 +38,9 @@ public class TechRebornTankHelper {
         if (data == null) return 0;
         
         CompoundTag tag = data.copyTag();
-        if (!tag.contains("tank", 10)) return 0;
+        if (!tag.contains("TankStorage", 10)) return 0;
         
-        CompoundTag tank = tag.getCompound("tank");
+        CompoundTag tank = tag.getCompound("TankStorage");
         if (tank.contains("amount", 99)) { // Any numeric type
             return tank.getLong("amount");
         }
@@ -53,9 +53,9 @@ public class TechRebornTankHelper {
         if (data == null) return;
         
         CompoundTag tag = data.copyTag();
-        if (!tag.contains("tank", 10)) return;
+        if (!tag.contains("TankStorage", 10)) return;
         
-        CompoundTag tank = tag.getCompound("tank");
+        CompoundTag tank = tag.getCompound("TankStorage");
         if (tank.contains("amount", 99)) {
             long currentAmount = tank.getLong("amount");
             tank.putLong("amount", Math.max(0, currentAmount - amountToExtract));
