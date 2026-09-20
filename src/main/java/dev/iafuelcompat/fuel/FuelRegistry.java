@@ -146,17 +146,6 @@ public final class FuelRegistry {
             }
         }
 
-        // Fallback for Tech Reborn Tank Units which don't expose FluidStorage.ITEM
-        if (dev.iafuelcompat.integration.TechRebornTankHelper.isTRTank(stack)) {
-            String fluidId = dev.iafuelcompat.integration.TechRebornTankHelper.getFluid(stack);
-            if (fluidId != null) {
-                FuelDefinition fluidDef = FLUID_FUELS.get(fluidId);
-                if (fluidDef != null && dev.iafuelcompat.integration.TechRebornTankHelper.getAmount(stack) > 0) {
-                    return fluidDef.getEffectiveBurnTime();
-                }
-            }
-        }
-
         return 0;
     }
 

@@ -45,26 +45,6 @@ public abstract class EngineVehicleRefuelTankMixin {
         Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, ctx);
         
         if (storage == null) {
-            // Fallback for Tech Reborn Tank Units which don't expose FluidStorage.ITEM
-            if (dev.iafuelcompat.integration.TechRebornTankHelper.isTRTank(stack)) {
-                String fluidId = dev.iafuelcompat.integration.TechRebornTankHelper.getFluid(stack);
-                if (fluidId != null) {
-                    FuelDefinition def = FuelRegistry.getFluidFuel(fluidId);
-                    if (def != null && this.fuel[slotIndex] <= 1000) {
-                        long amount = dev.iafuelcompat.integration.TechRebornTankHelper.getAmount(stack);
-                        if (amount > 0) {
-                            long toExtract = Math.min(amount, FluidConstants.BUCKET);
-                            dev.iafuelcompat.integration.TechRebornTankHelper.extract(stack, toExtract);
-                            int fuelTime = (int) ((double) toExtract / FluidConstants.BUCKET * def.getEffectiveBurnTime());
-                            if (fuelTime > 0) {
-                                this.fuel[slotIndex] += fuelTime;
-                                ci.cancel(); // Skip vanilla item shrinking logic
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
             return;
         }
 

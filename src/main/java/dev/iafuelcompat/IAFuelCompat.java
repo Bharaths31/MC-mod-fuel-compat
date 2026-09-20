@@ -8,7 +8,9 @@ import dev.iafuelcompat.integration.TechRebornIntegration;
 import dev.iafuelcompat.integration.ModernIndustrializationIntegration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,15 @@ public class IAFuelCompat implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("[IA-Fuels] Initializing IA Fuel Compatibility v{}", getVersion());
+
+        // Register global Fabric FluidStorage fallback for Tech Reborn Tank Units
+        FluidStorage.ITEM.registerFallback((stack, context) -> {
+            String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+            if (id.startsWith("techreborn:") && id.endsWith("_tank_unit")) {
+                return new dev.iafuelcompat.integration.TechRebornTankStorage(stack, context);
+            }
+            return null;
+        });
 
         Path configDir = FabricLoader.getInstance().getConfigDir();
         FuelConfig config = FuelConfig.loadOrCreate(configDir);
